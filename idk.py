@@ -4,7 +4,7 @@ from requests import post
 import subprocess
 import argparse
 import platform
-from os import mkdir, chdir
+from os import mkdir, chdir, remove
 
 url = 'https://graphql.melearn.mn'
 
@@ -43,13 +43,13 @@ def search(url: str, title: str) -> str:
 def get_ytdlp() -> str:
     os_name = platform.system()
     if os_name == "Windows":
-        subprocess.run(['powershell', '-Command', 'Invoke-WebRequest', '-Uri', 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe', '-OutFile', 'yt-dlp.exe'])
+        subprocess.run(['powershell', '-Command', 'Invoke-WebRequest', '-Uri', 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe', '-OutFile', 'yt-dlp.exe'], capture_output=True)
         return 'yt-dlp.exe'
     elif os_name == "Darwin":
-        subprocess.run(['wget', 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos'])
+        subprocess.run(['wget', 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos'], capture_output=True)
         return 'yt-dlp_macos'
     else:
-        subprocess.run(['wget', 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp'])
+        subprocess.run(['wget', 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp'], capture_output=True)
         return 'yt-dlp'
 def main() -> None:
     auth = {}
@@ -65,6 +65,7 @@ def main() -> None:
     chdir(args.title)
     bin = get_ytdlp()
     get_course(url=url, course_id=course_id, quality=args.res, auth=auth, yt_dlp=bin)
+    remove(bin)
     print('Done. ')
 
 if __name__ == "__main__":
